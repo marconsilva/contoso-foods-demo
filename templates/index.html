@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block title %}Contoso Foods - Fresh & Quality Products{% endblock %}
 
 {% block content %}
@@ -24,12 +25,12 @@
         <div class="category-buttons">
             <a href="{{ url_for('index') }}" 
                class="category-btn {% if not selected_category %}active{% endif %}">
-               All Products
+                All Products
             </a>
             {% for category in categories %}
                 <a href="{{ url_for('index', category=category) }}" 
                    class="category-btn {% if selected_category == category %}active{% endif %}">
-                   {{ category }}
+                    {{ category }}
                 </a>
             {% endfor %}
         </div>
@@ -40,6 +41,12 @@
         <div class="col-12">
             {% if selected_category %}
                 <h3 class="page-title">{{ selected_category }} Products</h3>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">All Products</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ selected_category }}</li>
+                    </ol>
+                </nav>
             {% else %}
                 <h3 class="page-title">All Products</h3>
             {% endif %}
@@ -53,30 +60,28 @@
         {% for product in products %}
             <div class="card h-100">
                 <div class="position-relative">
-                    <img src="{{ url_for('static', filename='images/' + product.image) }}"
-                         srcset="
-                         {{ url_for('static', filename='images/' + product.image) }} 1x,
-                         {{ url_for('static', filename='images/' + product.image_hd) }} 2x"
+                    <img src="{{ url_for('static', filename='images/' + product.image) }}" 
+                         class="card-img-top" 
                          alt="{{ product.name }}"
-                         class="card-img-top"
                          onerror="this.src='{{ url_for('static', filename='images/empty-icon.png') }}'">
                     <div class="position-absolute top-0 end-0 m-2">
                         <span class="badge bg-primary">{{ product.category }}</span>
                     </div>
                 </div>
+                
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">{{ product.name }}</h5>
                     <p class="card-text flex-grow-1">{{ product.description }}</p>
-                    <div class="price">{{ "%.2f"|format(product.price) }}</div>
+                    <div class="price">${{ "%.2f"|format(product.price) }}</div>
                     
                     <div class="d-flex gap-2">
                         <a href="{{ url_for('product_detail', product_id=product.id) }}" 
                            class="btn btn-primary flex-fill">
-                           <i class="fas fa-eye"></i> View Details
+                            <i class="fas fa-eye"></i> View Details
                         </a>
                         <a href="{{ url_for('add_to_cart', product_id=product.id) }}" 
                            class="btn btn-success">
-                           <i class="fas fa-cart-plus"></i>
+                            <i class="fas fa-cart-plus"></i>
                         </a>
                     </div>
                 </div>
@@ -102,7 +107,7 @@
 // Add some interactivity
 document.addEventListener('DOMContentLoaded', function() {
     // Add loading animation when adding to cart
-    const addToCartButtons = document.querySelectorAll('a[href*=add_to_cart]');
+    const addToCartButtons = document.querySelectorAll('a[href*="add_to_cart"]');
     addToCartButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             const icon = this.querySelector('i');
@@ -117,5 +122,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-{% endblock %}
-
+{% endblock %} 
