@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - Contoso Foods{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mt-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">All Products</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('index', category=product.category) }}">{{ product.category }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row mt-4">
+        <!-- Product Image -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-lg">
+                <img src="{{ url_for('static', filename='images/' + product.hero_image) }}" 
+                     class="card-img-top rounded" 
+                     alt="{{ product.name }}"
+                     style="height: 400px; object-fit: cover;"
+                     onerror="this.src='{{ url_for('static', filename='images/' + product.image) }}'">
+            </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-lg-6">
+            <div class="h-100 d-flex flex-column">
+                <div class="mb-3">
+                    <span class="badge bg-primary fs-6 mb-2">{{ product.category }}</span>
+                    <h1 class="page-title">{{ product.name }}</h1>
+                </div>
+
+                <div class="mb-4">
+                    <p class="lead text-muted">{{ product.description }}</p>
+                </div>
+
+                <div class="mb-4">
+                    <div class="price display-6 text-success">${{ "%.2f"|format(product.price) }}</div>
+                </div>
+
+                <!-- Product Features -->
+                <div class="mb-4">
+                    <h5 class="mb-3">Product Features</h5>
+                    <ul class="list-unstyled">
+                        {% if product.category == 'Fruits' %}
+                            <li><i class="fas fa-check text-success me-2"></i> Fresh and organic</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Rich in vitamins</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Farm-fresh quality</li>
+                        {% elif product.category == 'Dairy' %}
+                            <li><i class="fas fa-check text-success me-2"></i> Farm-fresh quality</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Rich in nutrients</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Refrigerated storage</li>
+                        {% elif product.category == 'Vegetables' %}
+                            <li><i class="fas fa-check text-success me-2"></i> Locally sourced</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Fresh picked</li>
+                            <li><i class="fas fa-check text-success me-2"></i> High nutritional value</li>
+                        {% elif product.category == 'Bakery' %}
+                            <li><i class="fas fa-check text-success me-2"></i> Freshly baked daily</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Artisanal quality</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Made with premium ingredients</li>
+                        {% else %}
+                            <li><i class="fas fa-check text-success me-2"></i> High quality ingredients</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Carefully selected</li>
+                            <li><i class="fas fa-check text-success me-2"></i> Great value</li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-auto">
+                    <div class="d-grid gap-2 d-md-flex">
+                        <a href="{{ url_for('add_to_cart', product_id=product.id) }}" 
+                           class="btn btn-success btn-lg flex-md-fill">
+                            <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                        </a>
+                        <a href="{{ url_for('index') }}" 
+                           class="btn btn-outline-secondary btn-lg flex-md-fill">
+                            <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                        </a>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="row mt-3 text-center">
+                        <div class="col-4">
+                            <div class="p-3 bg-light rounded">
+                                <i class="fas fa-truck text-primary mb-2 d-block"></i>
+                                <small class="text-muted">Fast Delivery</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 bg-light rounded">
+                                <i class="fas fa-shield-alt text-success mb-2 d-block"></i>
+                                <small class="text-muted">Quality Assured</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 bg-light rounded">
+                                <i class="fas fa-undo text-warning mb-2 d-block"></i>
+                                <small class="text-muted">Easy Returns</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    <div class="mt-5">
+        <h3 class="page-title">More from {{ product.category }}</h3>
+        <div class="row">
+            {% for related_product in products if related_product.category == product.category and related_product.id != product.id %}
+                {% if loop.index <= 4 %}
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="card h-100">
+                            <img src="{{ url_for('static', filename='images/' + related_product.image) }}" 
+                                 class="card-img-top" 
+                                 style="height: 150px; object-fit: cover;"
+                                 alt="{{ related_product.name }}"
+                                 onerror="this.src='{{ url_for('static', filename='images/empty-icon.png') }}'">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ related_product.name }}</h6>
+                                <div class="price text-success">${{ "%.2f"|format(related_product.price) }}</div>
+                                <a href="{{ url_for('product_detail', product_id=related_product.id) }}" 
+                                   class="btn btn-outline-primary btn-sm mt-2">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add loading animation when adding to cart
+    const addToCartButton = document.querySelector('a[href*="add_to_cart"]');
+    if (addToCartButton) {
+        addToCartButton.addEventListener('click', function(e) {
+            const icon = this.querySelector('i');
+            const text = this.querySelector('.btn-text, .me-2').nextSibling;
+            
+            icon.className = 'fas fa-spinner fa-spin me-2';
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Adding...';
+            this.classList.add('disabled');
+            
+            // In a real app, you would handle the server response here
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-check me-2"></i>Added!';
+                this.classList.remove('btn-success');
+                this.classList.add('btn-outline-success');
+            }, 1000);
+        });
+    }
+});
+</script>
+{% endblock %} 
